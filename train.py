@@ -7,7 +7,7 @@ import glog as log
 # pytorch related packages
 import torch
 import torch.nn as nn
-import torch.nn.functional as F 
+import torch.nn.functional as F
 import torchvision.transforms as T
 import torchvision.datasets as datasets
 import argparse
@@ -23,12 +23,22 @@ def train(args, model, train_loader, optimizer, criterion, epoch):
 				title="[Epoch {}: Training]".format(epoch),
 				width=40,
 				)):
-		optimizer.zero_grad()
-		output = model(data)
-		loss = criterion(output, target)
-		loss.backward()
-		optimizer.step()
+                def one_iteration(model, data, target, criterion):
+                    '''
+                     Please fill the training iteration with given components:
 
+                      model: our provided convolutional neural network
+                      data: Chinese Character Images
+                      target: category of the images
+                      criterion: the loss function
+                    '''
+                    ##############################
+                    print("Please fill the forward iteration.")
+                    ##############################
+
+                optimizer.zero_grad()
+                one_iteration(model, data, target, criterion)
+                optimizer.step()
 
 # Testing Part
 def test(args, model, test_loader, epoch):
@@ -57,18 +67,18 @@ def main():
 						help='SGD momentum (default: 0.9)')
 	parser.add_argument('--seed', type=int, default=1, metavar='S',
 						help='random seed (default: 1)')
-	parser.add_argument('--log-interval', type=int, default=1000, metavar='N',
-						help='how many batches to wait before logging training status')
 	parser.add_argument('--resume', type=str, default=None, help="Model Path.")
+	parser.add_argument('--model-name', type=str, default='char_cnn.pt',
+						help='Trained model name (defaut: char_cnn.pt).')
 	args = parser.parse_args()
 	torch.manual_seed(args.seed)
 
-	## Preparing data loader:
-	data_dir = 'processed/'
+    ## Fill the data directory: [train] and [test] should be at this path:
+	data_dir = 'path/to/your'
 	# We randomly sample the [image, target] pairs,
 	# Then use the pairs to train the model
 	trainset = datasets.ImageFolder(
-		osp.join(data_dir, 'train'), 
+		osp.join(data_dir, 'train'),
 		transform=T.Compose([
 			# padding the input image
 			T.Resize([96, 96]),
@@ -80,7 +90,7 @@ def main():
 		)
 	num_classes = len(trainset.classes)
 	valset = datasets.ImageFolder(
-		osp.join(data_dir, 'test'), 
+		osp.join(data_dir, 'test'),
 		transform=T.Compose([
 			T.Resize([96, 96]),
 			T.ToTensor(),
@@ -90,14 +100,14 @@ def main():
 	assert num_classes == len(valset.classes), "Categories mismatch for train[{}] and validation[{}].".format(num_classes, len(valset.classes))
 	# wrap the train/test set into the Dataloader to load the data in batches
 	train_loader = torch.utils.data.DataLoader(
-		trainset, 
-		batch_size=args.batch_size, 
+		trainset,
+		batch_size=args.batch_size,
 		shuffle=True,
 		num_workers=4,
 		)
 	test_loader = torch.utils.data.DataLoader(
-		valset, 
-		batch_size=args.batch_size, 
+		valset,
+		batch_size=args.batch_size,
 		shuffle=False,
 		num_workers=4,
 		)
@@ -106,8 +116,8 @@ def main():
 	if args.resume:
 		model.load_state_dict(torch.load(args.resume))
 	lr = args.lr
-	optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, 
-				momentum=args.momentum, 
+	optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
+				momentum=args.momentum,
 				weight_decay=0.001,
 				nesterov=True,)
 	criterion = nn.CrossEntropyLoss()
@@ -129,8 +139,6 @@ def main():
 	}
 	torch.save(result, "char_cnn.pt")
 	print("Trained Model saved to: {}".format('./char_cnn.pt'))
-		
+
 if __name__ == '__main__':
 	main()
-
-
