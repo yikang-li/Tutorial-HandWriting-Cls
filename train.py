@@ -24,13 +24,12 @@ def train(args, model, train_loader, optimizer, criterion, epoch):
 				width=40,
 				)):
                 def one_iteration(model, data, target, criterion):
-                    '''
-                     Please fill the training iteration with given components:
-
-                      model: our provided convolutional neural network
-                      data: Chinese Character Images
-                      target: category of the images
-                      criterion: the loss function
+					'''
+                    Please fill the training iteration with given components:
+                    model: our provided convolutional neural network
+                    data: Chinese Character Images
+                    target: category of the images
+                    criterion: the loss function
                     '''
                     ##############################
                     print("Please fill the forward iteration.")
@@ -74,43 +73,15 @@ def main():
 	torch.manual_seed(args.seed)
 
     ## Fill the data directory: [train] and [test] should be at this path:
-	data_dir = 'path/to/your'
-	# We randomly sample the [image, target] pairs,
-	# Then use the pairs to train the model
-	trainset = datasets.ImageFolder(
-		osp.join(data_dir, 'train'),
-		transform=T.Compose([
-			# padding the input image
-			T.Resize([96, 96]),
-			# T.RandomCrop(96, padding=5),
-			# T.RandomAffine(degrees=20, ),
-			T.ToTensor(),
-			T.Normalize(mean=[0.5, 0.5, 0.5,], std=[1., 1., 1.])
-			]),
-		)
-	num_classes = len(trainset.classes)
-	valset = datasets.ImageFolder(
-		osp.join(data_dir, 'test'),
-		transform=T.Compose([
-			T.Resize([96, 96]),
-			T.ToTensor(),
-			T.Normalize(mean=[0.5, 0.5, 0.5,], std=[1., 1., 1.]),
-			]),
-		)
-	assert num_classes == len(valset.classes), "Categories mismatch for train[{}] and validation[{}].".format(num_classes, len(valset.classes))
-	# wrap the train/test set into the Dataloader to load the data in batches
-	train_loader = torch.utils.data.DataLoader(
-		trainset,
-		batch_size=args.batch_size,
-		shuffle=True,
-		num_workers=4,
-		)
-	test_loader = torch.utils.data.DataLoader(
-		valset,
-		batch_size=args.batch_size,
-		shuffle=False,
-		num_workers=4,
-		)
+	data_dir = '/home/denglong/workspace/processed/processed'
+	# write your own dataloader to read images and targets from [data_dir]
+	# Then initialize your own [train_loader], [val_loader] and [num_classes]
+	# you can check torch.utils.data.DataLoader for help
+	############################
+	num_classes   # number of categories
+	train_loader  # training set loader
+	test_loader   # testing set loader
+	#############################
 	# get the model definition
 	model = Net(num_classes=num_classes)
 	if args.resume:
